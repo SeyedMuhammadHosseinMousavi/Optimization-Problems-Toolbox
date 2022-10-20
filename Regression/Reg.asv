@@ -1,0 +1,240 @@
+% warning('off');
+
+clear;
+% Data=load("Data.csv");
+% Inputs=Data(:,1:end-1);
+% Targets=Data(:,end);
+%% Input Model 
+% Display uigetfile dialog
+filterspec = {'*.csv'};
+[f, p] = uigetfile(filterspec);
+fileadd=fullfile(p,f);
+filecon=load(fileadd);
+Inputs=filecon(:,1:end-1);
+Targets=filecon(:,end);
+
+%% Learning 
+
+n = 9; % Neurons
+
+%----------------------------------------
+% 'trainlm'	    Levenberg-Marquardt
+% 'trainbr' 	Bayesian Regularization (good)
+% 'trainrp'  	Resilient Backpropagation
+% 'traincgf'	Fletcher-Powell Conjugate Gradient
+% 'trainoss'	One Step Secant (good)
+% 'traingd' 	Gradient Descent
+% Creating the NN ----------------------------
+net = feedforwardnet(n,'trainoss');
+
+%---------------------------------------------
+% configure the neural network for this dataset
+[net tr]= train(net,Inputs', Targets');
+
+perf = perform(net,Inputs, Targets); % mse
+% Current NN Weights and Bias
+Weights_Bias = getwb(net);
+% MSE Error for Current NN
+Outputs=net(Inputs');
+Outputs=Outputs';
+% Final MSE Error and Correlation Coefficients (CC)
+Err_MSE=mse(Targets,Outputs);
+CC1= corrcoef(Targets,Outputs);
+CC1= CC1(1,2);
+
+%-----------------------------------------------------
+%% Nature Inspired Regression
+% Create Handle for Error
+h = @(x) MSEHandle(x, net, Inputs', Targets');
+
+
+
+sizenn=size(Inputs);sizenn=sizenn(1,1);
+%-----------------------------------------
+%% Please select
+MaxIt = 5;       % Maximum Number of Iterations
+nPop = 5;        % Population Size 
+
+[x,err,BestCost] = tlbo(h, sizenn*n+n+n+1,MaxIt,nPop);
+
+
+%% Variables 
+VarSize = [1 sizenn*n+n+n+1];   % Decision Variables Matrix Size
+VarMin = -5;         % Decision Variables Lower Bound
+VarMax = 5;         % Decision Variables Upper Bound
+
+%% Start 
+CostFunction=h;
+% Empty Individuals
+empty_individual.Position = [];
+empty_individual.Cost = [];
+
+% Population Array
+pop = repmat(empty_individual, nPop, 1);
+% Initialize Best Solution
+BestSol.Cost = inf;
+% Population Members
+for i = 1:nPop
+pop(i).Position = unifrnd(VarMin, VarMax, VarSize);
+pop(i).Cost = CostFunction(pop(i).Position);
+if pop(i).Cost < BestSol.Cost
+BestSol = pop(i);
+end
+end
+% Best Cost Record
+BestCost = zeros(MaxIt, 1);
+
+%% TLBO Body
+for it = 1:MaxIt
+% Calculate Population Mean
+Mean = 0;
+for i = 1:nPop
+Mean = Mean + pop(i).Position;
+end
+Mean = Mean/nPop;
+% Select Teacher
+Teacher = pop(1);
+for i = 2:nPop
+if pop(i).Cost < Teacher.Cost
+Teacher = pop(i);
+end
+end
+% Teacher Phase
+for i = 1:nPop
+% Create Empty Solution
+newsol = empty_individual;
+% Teaching Factor
+TF = randi([1 2]);
+% Teaching (moving towards teacher)
+newsol.Position = pop(i).Position ...
++ rand(VarSize).*(Teacher.Position - TF*Mean);
+% Clipping
+newsol.Position = max(newsol.Position, VarMin);
+newsol.Position = min(newsol.Position, VarMax);
+% Evaluation
+newsol.Cost = CostFunction(newsol.Position);
+% Comparision
+if newsol.Cost<pop(i).Cost
+pop(i) = newsol;
+if pop(i).Cost < BestSol.Cost
+BestSol = pop(i);
+end
+end
+end
+% Learner Phase
+for i = 1:nPop
+A = 1:nPop;
+A(i) = [];
+j = A(randi(nPop-1));
+Step = pop(i).Position - pop(j).Position;
+if pop(j).Cost < pop(i).Cost
+Step = -Step;
+end
+% Create Empty Solution
+newsol = empty_individual;
+% Teaching (moving towards teacher)
+newsol.Position = pop(i).Position + rand(VarSize).*Step;
+% Clipping
+newsol.Position = max(newsol.Position, VarMin);
+newsol.Position = min(newsol.Position, VarMax);
+% Evaluation
+newsol.Cost = CostFunction(newsol.Position);
+% Comparision
+if newsol.Cost<pop(i).Cost
+pop(i) = newsol;
+if pop(i).Cost < BestSol.Cost
+BestSol = pop(i);
+end
+end
+end
+BestCost(it) = BestSol.Cost;
+% Iteration 
+disp(['In Iteration ' num2str(it) ': TLBO Cost Is = ' num2str(BestCost(it))]);
+end
+
+x=BestSol.Position';
+err=BestSol.Cost;
+
+
+% Plot ITR
+% figure;
+plot(BestCost,'k', 'LineWidth', 2);
+xlabel('ITR');
+ylabel('Cost Value');
+ax = gca; 
+ax.FontSize = 14; 
+ax.FontWeight='bold';
+set(gca,'Color','c')
+grid on;
+
+
+
+
+
+
+
+%%-------------------------------------------------------------------------
+net = setwb(net, x');
+% Optimized NN Weights and Bias
+getwb(net);
+% Error for Optimized NN
+Outputs2=net(Inputs');
+Outputs2=Outputs2';
+% Final MSE Error and Correlation Coefficients (CC)
+Err_MSE2=mse(Targets,Outputs2);
+CC2= corrcoef(Targets,Outputs2);
+CC2= CC2(1,2);
+
+%% Plot Regression
+% figure('units','normalized','outerposition',[0 0 1 1])
+% Normal
+% subplot(3,1,1)
+% [population2,gof] = fit(Targets,Outputs,'poly3');
+% plot(Targets,Outputs,'o',...
+% 'LineWidth',1,...
+% 'MarkerSize',8,...
+% 'MarkerEdgeColor','r',...
+% 'MarkerFaceColor',[0.3,0.9,0.1]);
+% title(['Normal R =  ' num2str(1-gof.rmse)],['Normal MSE =  ' num2str(Err_MSE)]);
+% hold on
+% plot(population2,'b-','predobs');
+% xlabel('Targets');ylabel('Outputs');   grid on;
+% ax = gca; 
+% ax.FontSize = 12; ax.LineWidth=2;
+% legend({'Normal Regression'},'FontSize',12,'TextColor','blue');hold off
+% Metaheuristics
+subplot(1,3,2)
+[population3,gof3] = fit(Targets,Outputs2,'poly3');
+plot(Targets,Outputs2,'o',...
+'LineWidth',1,...
+'MarkerSize',8,...
+'MarkerEdgeColor','g',...
+'MarkerFaceColor',[0.9,0.3,0.1]);
+title(['R =  ' num2str(1-gof3.rmse)],['MSE =  ' num2str(Err_MSE2)]); 
+hold on
+plot(population3,'b-','predobs');
+xlabel('Targets');ylabel('Outputs');   grid on;
+ax = gca; 
+ax.FontSize = 12; ax.LineWidth=2;
+legend({'Regression'},'FontSize',12,'TextColor','blue');hold off
+subplot(1,3,3)
+
+%% Error
+% figure('units','normalized','outerposition',[0 0 1 1])
+figure;
+Errors=Targets-Outputs2;
+ErrorMean=mean(Errors);
+ErrorStd=std(Errors);
+subplot(2,1,1);
+plot(Targets,'m');hold on;
+plot(Outputs2,'k');legend('Target','Output');
+title('Training Part');xlabel('Sample Index');grid on;
+subplot(2,1,2);
+h=histfit(Errors, 50);
+h(1).FaceColor = [.3 .8 0.3];
+title(['Train Error Mean =    ' num2str(ErrorMean) '   ,' ...
+    '   Train Error STD =    ' num2str(ErrorStd)]);grid on;
+
+% Correlation Coefficients
+fprintf('Normal Correlation Coefficients Is =  %0.4f.\n',CC1);
+fprintf('New Correlation Coefficients Is =  %0.4f.\n',CC2);
