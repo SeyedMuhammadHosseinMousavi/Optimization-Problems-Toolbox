@@ -7,4 +7,3 @@ There are seven applications of Clustering, Regression, Image Quantization, Imag
 
 https://youtu.be/KJlAfH4-yYY
 
-<iframe width="1066" height="598" src="https://www.youtube.com/embed/KJlAfH4-yYY" title="Optimization Problems Toolbox" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
