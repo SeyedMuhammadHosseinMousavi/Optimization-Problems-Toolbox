@@ -14,9 +14,21 @@ There are seven applications of Clustering, Regression, Image Quantization, Imag
 - https://youtu.be/KJlAfH4-yYY
 
 
+## Demo Video
+
+[![Optimization Problems Toolbox Video](https://img.youtube.com/vi/KJlAfH4-yYY/0.jpg)](https://youtu.be/KJlAfH4-yYY)
+
+Click the image to watch the demo video!
+
+
+
+
+<div align="justify">
 
 
 Welcome to the **Optimization Problems Toolbox** repository! This toolbox provides an integrated environment for solving a variety of optimization problems using state-of-the-art algorithms. With an intuitive interface and flexible codebase, this toolbox is a powerful resource for researchers, students, and practitioners.
+
+</div>
 
 ---
 
@@ -47,9 +59,6 @@ Optimization-Problems-Toolbox/
 ├── scheduling/
 ├── tsp/
 ├── bpp/
-├── algorithms/
-├── data/
-├── requirements.txt
 └── README.md
 ```
 
