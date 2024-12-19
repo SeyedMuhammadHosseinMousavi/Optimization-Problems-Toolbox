@@ -13,32 +13,10 @@ There are seven applications of Clustering, Regression, Image Quantization, Imag
 ### Link to the youtube video:
 - https://youtu.be/KJlAfH4-yYY
 
-# Optimization Problems Toolbox
+
+
 
 Welcome to the **Optimization Problems Toolbox** repository! This toolbox provides an integrated environment for solving a variety of optimization problems using state-of-the-art algorithms. With an intuitive interface and flexible codebase, this toolbox is a powerful resource for researchers, students, and practitioners.
-
----
-
-## Table of Contents
-
-- [Features](#features)
-- [Optimization Applications](#optimization-applications)
-- [Algorithms](#algorithms)
-- [Usage Instructions](#usage-instructions)
-- [File Structure](#file-structure)
-- [Demo Video](#demo-video)
-- [Contributing](#contributing)
-- [License](#license)
-
----
-
-## Features
-
-- User-friendly interface for both IDE and code-based usage.
-- Supports input in CSV or image formats.
-- Flexible parameter tuning for optimization algorithms.
-- Visual and numerical output of results.
-- Applications include clustering, regression, scheduling, and more.
 
 ---
 
@@ -67,34 +45,6 @@ The toolbox includes the following optimization algorithms:
 
 ---
 
-## Usage Instructions
-
-### Prerequisites
-
-- Python 3.x
-- Required libraries (install using `pip install -r requirements.txt`)
-
-### How to Use
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/SeyedMuhammadHosseinMousavi/Optimization-Problems-Toolbox.git
-   ```
-2. Navigate to the directory:
-   ```bash
-   cd Optimization-Problems-Toolbox
-   ```
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. Choose your application (IDE or code):
-   - **IDE**: Open the GUI interface and select the problem, algorithm, and parameters.
-   - **Code**: Use the provided scripts to execute optimization tasks programmatically.
-5. Input your data (CSV or image).
-6. Run the application and analyze results.
-
----
 
 ## File Structure
 
@@ -113,13 +63,6 @@ Optimization-Problems-Toolbox/
 └── README.md
 ```
 
----
-
-## Demo Video
-
-For a detailed demonstration, watch the [Optimization Problems Toolbox Video](https://github.com/SeyedMuhammadHosseinMousavi/Optimization-Problems-Toolbox).
-
----
 
 ## Contributing
 
