@@ -34,16 +34,6 @@ The toolbox addresses the following optimization problems:
 
 ---
 
-## Algorithms
-
-The toolbox includes the following optimization algorithms:
-
-1. **Harmony Search (HS)**: A physics-based optimization algorithm.
-2. **Differential Evolution (DE)**: An evolutionary algorithm.
-3. **Firefly Algorithm (FA)**: A swarm-based optimization method.
-4. **Teaching Learning Based Optimization (TLBO)**: A human-inspired optimization technique.
-
----
 
 
 ## File Structure
